@@ -21,6 +21,6 @@ def getMaxSubArray(arr):
     return (best_left, best_right, max_global)
 
 if __name__ == "__main__":
-    arr = [-2, 1, -3, 4, -1, 2, 1, -5, 4]
-    print(getMaxSubArray(arr))
-
+    arr = [1, -2, 3, 10, -4, 7, 2, -5]
+    (left, right, max_sum) = getMaxSubArray(arr)
+    print(f"Subarray: {arr[left:right + 1]}, Sum: {max_sum}")
