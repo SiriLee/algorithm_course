@@ -35,6 +35,37 @@ def prim(graph, start):
 
     return mst, total_weight
 
+class DisjointSet:
+    """
+    Disjoint Set (Union-Find) data structure for Kruskal's algorithm.
+    """
+
+    def __init__(self):
+        self.parent = {}
+        self.rank = {}
+
+    def find(self, node):
+        if self.parent[node] != node:
+            self.parent[node] = self.find(self.parent[node])
+        return self.parent[node]
+
+    def union(self, node1, node2):
+        root1 = self.find(node1)
+        root2 = self.find(node2)
+
+        if root1 != root2:
+            if self.rank[root1] > self.rank[root2]:
+                self.parent[root2] = root1
+            else:
+                self.parent[root1] = root2
+                if self.rank[root1] == self.rank[root2]:
+                    self.rank[root2] += 1
+
+    def make_set(self, node):
+        if node not in self.parent:
+            self.parent[node] = node
+            self.rank[node] = 0
+
 def kruskal(graph):
     """
     Kruskal's algorithm to find the Minimum Spanning Tree (MST) of a graph.
@@ -46,32 +77,11 @@ def kruskal(graph):
     mst: A list of edges in the Minimum Spanning Tree.
     total_weight: The total weight of the Minimum Spanning Tree.
     """
-    parent = {}
-    rank = {}
+    ds = DisjointSet()
 
-    def find(node):
-        if parent[node] != node:
-            parent[node] = find(parent[node])
-        return parent[node]
-
-    def union(node1, node2):
-        root1 = find(node1)
-        root2 = find(node2)
-
-        if root1 != root2:
-            if rank[root1] > rank[root2]:
-                parent[root2] = root1
-            else:
-                parent[root1] = root2
-                if rank[root1] == rank[root2]:
-                    rank[root2] += 1
-
-    # Initialize disjoint sets
     for weight, node1, node2 in graph:
-        parent[node1] = node1
-        parent[node2] = node2
-        rank[node1] = 0
-        rank[node2] = 0
+        ds.make_set(node1)
+        ds.make_set(node2)
 
     mst = []
     total_weight = 0
@@ -80,8 +90,8 @@ def kruskal(graph):
     sorted_edges = sorted(graph)
 
     for weight, node1, node2 in sorted_edges:
-        if find(node1) != find(node2):
-            union(node1, node2)
+        if ds.find(node1) != ds.find(node2):
+            ds.union(node1, node2)
             mst.append((node1, node2, weight))
             total_weight += weight
 
